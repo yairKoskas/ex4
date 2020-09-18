@@ -2,4 +2,10 @@
 
 #include "server.hpp"
 
-class MySerialSrever : public server_side::Server {};
+class MySerialServer : public server_side::Server {
+    private:
+        int m_sockfd;
+    public:
+        void open(int port, client_side::ClientHandler ch);
+        void close();
+};
