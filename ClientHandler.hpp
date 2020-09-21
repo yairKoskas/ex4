@@ -9,6 +9,6 @@
 namespace client_side {
     class ClientHandler {
         public:
-            virtual int handleClient(std::string inputStream, std::string outputStream);
+            virtual int handleClient(int sock_fd);
     };
 };
