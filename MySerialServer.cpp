@@ -17,10 +17,8 @@
 #define THROW_SYSTEM_ERROR() \
     throw std::system_error { errno, std::system_category() }
 
-MySerialServer::MySerialServer() {
 
-}
-void MySerialServer::open(int port) {
+void MySerialServer::open(int port, client_side::ClientHandler ch) {
     m_sockfd = socket(AF_INET,SOCK_STREAM,0);
     if(m_sockfd < 0) {
         THROW_SYSTEM_ERROR();
@@ -37,18 +35,19 @@ void MySerialServer::open(int port) {
         closeServer();
         THROW_SYSTEM_ERROR();
     }
+    if(0 > listen(m_sockfd,1024)) {
+        closeServer();
+        THROW_SYSTEM_ERROR();
+    }
     socklen_t sizeOfCAddress = sizeof(connectAddress);
     while(true) {
-        if (0 > accept(m_sockfd, reinterpret_cast<sockaddr*>(&connectAddress),&sizeOfCAddress)) {
+        int client_sockfd = accept(m_sockfd, reinterpret_cast<sockaddr*>(&connectAddress),&sizeOfCAddress);
+        if (0 > client_sockfd) {
             closeServer();
             THROW_SYSTEM_ERROR();
         }
-        std::string buffer(1024, '\0');
-        const auto numBytesRead = read(m_sockfd, (void*)buffer.data(), buffer.size() - 1);
-        if (numBytesRead < 0) {
-            closeServer();
-            THROW_SYSTEM_ERROR();
-        }
+        ch.handleClient(client_sockfd, m_sockfd);
+        close(client_sockfd);
     }
 }
 
