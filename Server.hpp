@@ -6,5 +6,10 @@
 
 
 namespace server_side {
-    
+
+    class Server {
+        public:
+            virtual void open(int port, client_side::ClientHandler ch);
+            virtual void closeServer();
+    };
 };
