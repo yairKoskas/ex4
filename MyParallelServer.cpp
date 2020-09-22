@@ -28,8 +28,8 @@ void threadClient(int serverSock, std::queue<int>& clientConnections, client_sid
         if(!clientConnections.empty()) {
             const auto clientSock = clientConnections.front();
             clientConnections.pop();
-            ch.handleClient(clientSock, serverSock);
-            g_mutex.unlock();            
+            g_mutex.unlock(); 
+            ch.handleClient(clientSock, serverSock);           
         } else {
             g_mutex.unlock();
         }
