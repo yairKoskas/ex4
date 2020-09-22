@@ -11,16 +11,37 @@
 #include <vector>
 #include <system_error>
 #include <thread>
-
+#include <queue>
 #include "ClientHandler.hpp"
 #include "MyParallelServer.hpp"
 
+#define THREAD_POOL_SIZE 20
+
 #define THROW_SYSTEM_ERROR() \
     throw std::system_error { errno, std::system_category() }
-#define THREAD_POOL_SIZE 10
+
+std::mutex g_mutex;
+
+void threadClient(int serverSock, std::queue<int>& clientConnections, client_side::ClientHandler ch) {
+    while(true) {
+        g_mutex.lock();
+        if(!clientConnections.empty()) {
+            const auto clientSock = clientConnections.front();
+            clientConnections.pop();
+            ch.handleClient(clientSock, serverSock);
+            g_mutex.unlock();            
+        } else {
+            g_mutex.unlock();
+        }
+    }
+}
 
 void MyParallelServer::open(int port, client_side::ClientHandler ch) {
-    std::vector<std::thread> threads;
+    std::queue<int> clientConnections;
+    std::thread pool[THREAD_POOL_SIZE];
+    for(uint32_t i = 0 ; i < THREAD_POOL_SIZE ; ++i ) {
+        pool[i] = std::thread(threadClient, m_sockfd ,std::ref(clientConnections), ch);
+    }
     m_sockfd = socket(AF_INET,SOCK_STREAM,0);
     if(m_sockfd < 0) {
         THROW_SYSTEM_ERROR();
@@ -37,8 +58,23 @@ void MyParallelServer::open(int port, client_side::ClientHandler ch) {
         closeServer();
         THROW_SYSTEM_ERROR();
     }
+    if(0 > listen(m_sockfd,512)) {
+        closeServer();
+        THROW_SYSTEM_ERROR();
+    }
+    socklen_t size = sizeof(connectAddress);
+    while(true) {
+        int clientSock = accept(m_sockfd, reinterpret_cast<sockaddr*>(&connectAddress),&size);
+        std::cout << "CONNECTED" << std::endl;
+        if(clientSock < 0) {
+            THROW_SYSTEM_ERROR();
+        }
+        g_mutex.lock();
+        clientConnections.push(clientSock);
+        g_mutex.unlock();
+    }
 }
 
 void MyParallelServer::closeServer() {
     close(m_sockfd);
-} 
+}
