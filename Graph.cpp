@@ -4,36 +4,34 @@
 #include <list>
 
 
-Graph::Graph(const Matrix& other, const State& initState, const State& goalState){
-    //what is the right line from the three below?
-    //Matrix::Matrix(this->matrix, other);
-    //(this->matrix).Matrix(other);
-    //(this->matrix) = other;
-    this->initState = initState;
-    this->goalState = goalState;
+Graph::Graph(const Matrix& other, const State& initS, const State& goalS): matrix(other) ,initState(initS), goalState(goalS) {
 }
 
-Graph::getInitialState() const override{
+State Graph::getInitialState() const {
     return this->initState;
 }
 
-Graph::getGoalState() const override{
+State Graph::getGoalState() const {
     return this->goalState;
 }
 
-Graph::getAllPossibleStates(const State& s) const override{
+std::list<State> Graph::getAllPossibleStates(const State& s) const {
     std::list<State> allPossibeStates;
     if(s.getRow() > 0){
-        allPossibeStates.push_back(new State(s.getRow() - 1, s.getCol()));
+        State state = State(s.getRow() - 1, s.getCol(), s.getCost() + this->matrix(s.getRow() - 1, s.getCol()), &s);
+        allPossibeStates.push_back(state);
     }
     if(s.getRow() < (this->matrix).getHeight()){
-        allPossibeStates.push_back(new State(s.getRow() + 1, s.getCol()));
+        State state = State(s.getRow() + 1, s.getCol(), s.getCost() + this->matrix(s.getRow() + 1, s.getCol()), &s);
+        allPossibeStates.push_back(state);
     }
     if(s.getCol() > 0){
-        allPossibeStates.push_back(new State(s.getRow(), s.getCol() - 1));
+        State state = State(s.getRow(), s.getCol() - 1, s.getCost() + this->matrix(s.getRow(), s.getCol() - 1), &s);
+        allPossibeStates.push_back(state);
     }
     if(s.getCol() < (this->matrix).getWidth()){
-        allPossibeStates.push_back(new State(s.getRow(), s.getCol() + 1));
+        State state = State(s.getRow(), s.getCol() + 1, s.getCost() + this->matrix(s.getRow(), s.getCol() + 1), &s);
+        allPossibeStates.push_back(state);
     }
     return allPossibeStates;
 }
