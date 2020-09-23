@@ -3,25 +3,25 @@
 #include <stdint.h>
 
 class State {
-    private:
-        const int row;    //row inthe matrix
-        const int col;    //col in the matrix
-        const double cost;    //cost to reach this state
-        const State *cameFrom;   //the state we came from to this state
+private:
+    uint32_t row;    //row inthe matrix
+    uint32_t col;    //col in the matrix
+    double cost;    //cost to reach this state
+    State *cameFrom;   //the state we came from to this state
 
-    public:
-        State(const int row, const int col, const double cost, const State* state);
-        bool Equals(const State& other) const;
-        int getRow() const;
-        int getCol() const;
-        double getCost() const;
-        const State* lastStateBeforeCurrent() const;
-        //State& operator=(const State& other);
-
+public:
+    State(uint32_t row, uint32_t col, double cost, State* state);
+    bool Equals(const State& other) const;
+    uint32_t getRow() const;
+    uint32_t getCol() const;
+    double getCost() const;
+    State* lastStateBeforeCurrent() const;
+    bool operator==(const State& s) const;
+    bool operator!=(const State& s) const;
+    bool operator<(const State& other) const;
 };
-
 //compare to States according to their cost
 class MyComparator {
 public:
-    uint32_t operator() (const State& s1, const State& s2);
+    uint32_t operator() (State& s1, State& s2) const;
 };

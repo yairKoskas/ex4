@@ -18,4 +18,5 @@ public:
     //solve a problem with an algorithem and print the output
     void solve(Searcher searcher, Searchable searchable) override;
     std::string getOutString() const;
+    virtual ~GraphSolver() = default;
 };

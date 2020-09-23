@@ -13,10 +13,11 @@ class Searcher
 {
     public:
         //the search method
-        virtual Solution search(Searchable searchable) const;
+        virtual Solution search(Searchable searchable);
         //the vertex you can go to from the current vertex
         virtual uint32_t getNumberOfNodesEvaluated() const;
         //which algorithem was used
         virtual std::string getAlgorthemType() const;
+        virtual ~Searcher() = default;
         
 };

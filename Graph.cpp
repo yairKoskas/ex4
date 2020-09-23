@@ -1,6 +1,6 @@
 #include "Graph.hpp"
 #include "Matrix.hpp"
-#include "State.hpp"
+//#include "State.hpp"
 #include <list>
 
 
@@ -15,7 +15,7 @@ State Graph::getGoalState() const {
     return this->goalState;
 }
 
-std::list<State> Graph::getAllPossibleStates(const State& s) const {
+std::list<State> Graph::getAllPossibleStates(State& s) const {
     std::list<State> allPossibeStates;
     if(s.getRow() > 0){
         State state = State(s.getRow() - 1, s.getCol(), s.getCost() + this->matrix(s.getRow() - 1, s.getCol()), &s);

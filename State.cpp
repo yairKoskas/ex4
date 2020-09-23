@@ -2,18 +2,22 @@
 
 #include "State.hpp"
 
-State::State(int i, int j, double c, const State* s) : row(i), col(j), cost(c), cameFrom(s) {
+State::State(uint32_t i, uint32_t j, double c, State* s){
+    this->row = i;
+    this->col = j;
+    this->cost = c;
+    this->cameFrom = s;
 }
 
 bool State::Equals(const State& other) const{
     return this->row == other.row && this->col == other.col;
 }
 
-int State::getRow() const{
+uint32_t State::getRow() const{
     return this->row;
 }
 
-int State::getCol() const{
+uint32_t State::getCol() const{
     return this->col;
 }
 
@@ -21,16 +25,23 @@ double State::getCost() const{
     return this->cost;
 }
 
-const State* State::lastStateBeforeCurrent() const{
+State* State::lastStateBeforeCurrent() const{
     return this->cameFrom;
 }
 
-State& State::operator=(const State& other) {
-    State state = State(other.getRow(), other.getCol(), other.getCost(), other.lastStateBeforeCurrent());
-    return state;
+bool State::operator==(const State& s) const{
+    return this->Equals(s);
+}
+
+bool State::operator!=(const State& s) const{
+    return !(this->operator==(s));
+}
+
+bool State::operator<(const State& other) const{
+    return this->getCost() < other.getCost();
 }
 
 
-uint32_t MyComparator::operator() (const State& s1, const State& s2){
+uint32_t MyComparator::operator() (State& s1, State& s2) const{
         return s1.getCost() > s2.getCost();
 }

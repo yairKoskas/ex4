@@ -8,4 +8,5 @@ class MyParallelServer : public server_side::Server {
     public:
         void open(int port, client_side::ClientHandler ch);
         void closeServer();
+        virtual ~MyParallelServer() = default;
 };

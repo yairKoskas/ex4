@@ -1,3 +1,5 @@
+#pragma once
+
 #include <sys/socket.h>
 #include <string_view>
 #include <iostream>
@@ -11,5 +13,6 @@ namespace server_side {
         public:
             virtual void open(int port, client_side::ClientHandler ch);
             virtual void closeServer();
+            virtual ~Server() = default;
     };
-};
+}
