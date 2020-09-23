@@ -13,7 +13,7 @@
 #include <mutex>
 #include <thread>
 #include "ClientHandler.hpp"
-#include "MySerialServer.h"
+#include "MySerialServer.hpp"
 
 #define THROW_SYSTEM_ERROR() \
     throw std::system_error { errno, std::system_category() }
