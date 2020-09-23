@@ -2,6 +2,7 @@
 
 #include "Matrix.hpp"
 #include "State.hpp"
+#include "Searchable.hpp"
 
 
 class Graph: public Searchable{
@@ -14,4 +15,7 @@ private:
 
 public:
     Graph(const Matrix& other, const State& initState, const State& goalState);
+    State getInitialState() const override;
+    State getGoalState() const override;
+    std::list<State> getAllPossibleStates(const State& s) const override;
 };
