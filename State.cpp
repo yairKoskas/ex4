@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #include "State.hpp"
 
 State::State(int i, int j, double c, const State* s) : row(i), col(j), cost(c), cameFrom(s) {
@@ -26,4 +28,9 @@ const State* State::lastStateBeforeCurrent() const{
 State& State::operator=(const State& other) {
     State state = State(other.getRow(), other.getCol(), other.getCost(), other.lastStateBeforeCurrent());
     return state;
+}
+
+
+uint32_t MyComparator::operator() (const State& s1, const State& s2){
+        return s1.getCost() > s2.getCost();
 }

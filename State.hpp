@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 class State {
     private:
         const int row;    //row inthe matrix
@@ -14,14 +16,12 @@ class State {
         int getCol() const;
         double getCost() const;
         const State* lastStateBeforeCurrent() const;
-        State& State::operator=(const State& other);
+        //State& operator=(const State& other);
 
 };
 
 //compare to States according to their cost
 class MyComparator {
 public:
-    int operator() (const State& s1, const State& s2){
-        return s1.getCost() > s2.getCost();
-    }
+    uint32_t operator() (const State& s1, const State& s2);
 };
