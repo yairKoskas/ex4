@@ -1,8 +1,6 @@
 #include "State.hpp"
 
-State::State(int i, int j){
-    this->row = i;
-    this->col = j;
+State::State(int i, int j, double c, const State* s) : row(i), col(j), cost(c), cameFrom(s) {
 }
 
 bool State::Equals(const State& other) const{
@@ -21,6 +19,11 @@ double State::getCost() const{
     return this->cost;
 }
 
-State* State::lastStateBeforeCurrent() const{
+const State* State::lastStateBeforeCurrent() const{
     return this->cameFrom;
+}
+
+State& State::operator=(const State& other) {
+    State state = State(other.getRow(), other.getCol(), other.getCost(), other.lastStateBeforeCurrent());
+    return state;
 }
