@@ -25,12 +25,12 @@ const State* State::lastStateBeforeCurrent() const{
     return this->cameFrom;
 }
 
-State& State::operator=(const State& other) {
+State& State::operator=(const State& other) noexcept{
     State state = State(other.getRow(), other.getCol(), other.getCost(), other.lastStateBeforeCurrent());
     return state;
 }
 
 
-uint32_t MyComparator::operator() (const State& s1, const State& s2){
+int MyComparator::operator() (const State& s1, const State& s2) {
         return s1.getCost() > s2.getCost();
 }
