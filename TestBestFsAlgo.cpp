@@ -1,5 +1,4 @@
 
-
 #include <iostream>
 #include <string>
 
@@ -10,6 +9,7 @@
 #include "Searcher.hpp"
 #include "GraphSolver.hpp"
 #include "Solver.hpp"
+#include "BestFS.hpp"
 
 int  main(){
     Matrix MyMatrix = Matrix(3, 3);
@@ -26,9 +26,9 @@ int  main(){
     State init = State(0, 0, 0.0, nullptr);
     State goal = State(2, 2, 0.0, nullptr);
 
-    Searchable MyGraph = Graph(MyMatrix, init, goal);
+    Graph MyGraph = Graph(MyMatrix, init, goal);
 
-    Searcher MyAlgo;
+    BestFS MyAlgo;
 
     GraphSolver graphSolver = GraphSolver();
     graphSolver.solve(MyAlgo, MyGraph);

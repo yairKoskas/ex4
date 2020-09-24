@@ -7,7 +7,7 @@
 #include "Solution.hpp"
 #include "GraphSolver.hpp"
 
-void GraphSolver::solve(Searcher searcher, Searchable searchable){
+void GraphSolver::solve(Searcher& searcher, Searchable& searchable){
     solution = searcher.search(searchable);
     numberOfEvaluateVertex = searcher.getNumberOfNodesEvaluated();
     outString = std::to_string(solution.getNumberOfVertexesInWay())

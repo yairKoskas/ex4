@@ -1,19 +1,11 @@
-//#include <vector>
-//#include <bits/stdc++.h>
-//#include <unordered_set>
+
 #include <string>
 #include <list>
 #include <iterator>
-//#include <queue>
-//#include <stdint.h>
-
 
 #include "BestFS.hpp"
-// #include "State.hpp"
-// #include "Searchable.hpp"
-// #include "Solution.hpp"
 
-Solution BestFS::search (Searchable searchable) {
+Solution BestFS::search (Searchable& searchable) {
     State state = State(searchable.getInitialState().getRow(), searchable.getInitialState().getCol(), 0,  nullptr);
     pq.push(state);
 
@@ -21,7 +13,7 @@ Solution BestFS::search (Searchable searchable) {
         //pull the first state in the queue and add it to closed-set
         State st = pq.top();
         pq.pop();
-        evaluateNodes++;
+        this->evaluateNodes++;
         //the check if States are equals is only according to their place in th graph
         //and not according to the cost
         closed.insert(st);
@@ -33,11 +25,7 @@ Solution BestFS::search (Searchable searchable) {
         std::list<State> succerssors = searchable.getAllPossibleStates(st);
         for (auto it = succerssors.begin(); it != succerssors.end(); ++it){
             //true if the state in the set, false if not
-
-            //check
-            const bool is_in_closed = true;
-
-            //const bool is_in_closed = ((closed.find(*it)) != (closed.end()));
+            const bool is_in_closed = ((closed.find(*it)) != (closed.end()));
             if(!is_in_closed){
                 pq.push(*it);
             }
@@ -50,7 +38,6 @@ Solution BestFS::search (Searchable searchable) {
 
 Solution BestFS::backTrace() {
     Solution solu;
-    //std::list<State> solu
     //we know that closed is not empty because it has at least the initState
     while(true){
         solu.getVertexes().push_front(*(closed.end()));
