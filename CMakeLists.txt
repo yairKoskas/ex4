@@ -10,6 +10,20 @@ MessageException.cpp MyParallelServer.cpp MySerialServer.cpp Solution.cpp State.
 target_link_libraries(ex4.out pthread)
 target_link_libraries(ex4.out matrix)
 
+
+# project(train VERSION 0.1.0)
+# set(CXX_STANDARD 17)
+
+# add_executable(train main.cpp
+#         MyParallelServer.cpp
+#         MySerialServer.cpp
+#         MyClientHandler.cpp
+#         State.cpp
+#         Matrix.cpp
+#         Graph.cpp
+#         MessageException.cpp)
+# link_libraries(train libmatrix)
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)

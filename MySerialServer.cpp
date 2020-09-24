@@ -1,4 +1,4 @@
-
+#include "MySerialServer.hpp"
 #include <arpa/inet.h>
 #include <errno.h>
 #include <string.h>
@@ -19,17 +19,17 @@
     throw std::system_error { errno, std::system_category() }
 
 void serialClients(int sockfd, sockaddr_in connectAddress,
-            client_side::ClientHandler ch, socklen_t sizeOfCAddress) {
+            MyClientHandler ch, socklen_t sizeOfCAddress) {
     while(true) {
         int client_sockfd = accept(sockfd, reinterpret_cast<sockaddr*>(&connectAddress),&sizeOfCAddress);
         if(client_sockfd < 0) {
             THROW_SYSTEM_ERROR();
         }
-        ch.handleClient(client_sockfd, sockfd);
+        ch.handleClient(client_sockfd);
         close(client_sockfd);
     }
 }
-void MySerialServer::open(int port, client_side::ClientHandler ch) {
+void MySerialServer::open(int port, MyClientHandler ch) {
     m_sockfd = socket(AF_INET,SOCK_STREAM,0);
     if(m_sockfd < 0) {
         THROW_SYSTEM_ERROR();

@@ -12,7 +12,7 @@
 #include <system_error>
 #include <thread>
 #include <queue>
-#include "ClientHandler.hpp"
+#include "MyClientHandler.hpp"
 #include "MyParallelServer.hpp"
 
 #define THREAD_POOL_SIZE 20
@@ -22,21 +22,21 @@
 
 std::mutex g_mutex;
 
-void threadClient(int serverSock, std::queue<int>& clientConnections, client_side::ClientHandler ch) {
+void threadClient(int serverSock, std::queue<int>& clientConnections, MyClientHandler ch) {
     while(true) {
         g_mutex.lock();
         if(!clientConnections.empty()) {
             const auto clientSock = clientConnections.front();
             clientConnections.pop();
             g_mutex.unlock(); 
-            ch.handleClient(clientSock, serverSock);           
+            ch.handleClient(clientSock);           
         } else {
             g_mutex.unlock();
         }
     }
 }
 
-void MyParallelServer::open(int port, client_side::ClientHandler ch) {
+void MyParallelServer::open(int port, MyClientHandler ch) {
     std::queue<int> clientConnections;
     std::thread pool[THREAD_POOL_SIZE];
     for(uint32_t i = 0 ; i < THREAD_POOL_SIZE ; ++i ) {

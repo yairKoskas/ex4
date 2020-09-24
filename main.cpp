@@ -1,6 +1,8 @@
-#include "MySerialServer.hpp"
+#include "MyParallelServer.hpp"
 #include "Server.hpp"
+#include "MyClientHandler.hpp"
 int main() {
-    MySerialServer server;
-    server.open(8081);
+    MyParallelServer server;
+    MyClientHandler ch = MyClientHandler();
+    server.open(8081,ch);
 }
