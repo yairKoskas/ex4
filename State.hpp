@@ -11,7 +11,7 @@ private:
 
 public:
     State(uint32_t row, uint32_t col, double cost, State* state);
-    bool Equals(const State& other) const;
+    bool equals(const State& other) const;
     uint32_t getRow() const;
     uint32_t getCol() const;
     double getCost() const;

@@ -19,7 +19,7 @@ private:
     uint32_t evaluateNodes = 0;
 
     //return a list of the States in the solution of the algorithem
-    Solution backTrace();
+    Solution backTrace(const State& state);
 
 public:
     //BestFS();

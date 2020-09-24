@@ -20,7 +20,7 @@ Solution BFS::search(Searchable& searchable) {
         queue.pop_front(); 
   
         //check if we found the goal state
-        if(state.Equals(searchable.getGoalState())){
+        if(state.equals(searchable.getGoalState())){
             return backTrace();
         }
 
@@ -32,7 +32,7 @@ Solution BFS::search(Searchable& searchable) {
 
             bool is_in_visited = false;
             for (auto iter = visited.begin(); iter != visited.end(); ++iter){
-                if((*iter).Equals(*it)){
+                if((*iter).equals(*it)){
                     is_in_visited = true;
                     break;
                 }
@@ -58,7 +58,7 @@ Solution BFS::backTrace(){
         if(visited.empty()){
             return solu;
         }
-        while(!(*(visited.end())).Equals(*(*(solu.getVertexes().begin())).lastStateBeforeCurrent())){
+        while(!(*(visited.end())).equals(*(*(solu.getVertexes().begin())).lastStateBeforeCurrent())){
             visited.erase(visited.end());
         }
     }

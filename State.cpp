@@ -9,7 +9,7 @@ State::State(uint32_t i, uint32_t j, double c, State* s){
     this->cameFrom = s;
 }
 
-bool State::Equals(const State& other) const{
+bool State::equals(const State& other) const{
     return this->row == other.row && this->col == other.col;
 }
 
@@ -30,7 +30,7 @@ State* State::lastStateBeforeCurrent() const{
 }
 
 bool State::operator==(const State& s) const{
-    return this->Equals(s);
+    return this->equals(s);
 }
 
 bool State::operator!=(const State& s) const{

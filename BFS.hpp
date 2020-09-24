@@ -18,12 +18,12 @@ private:
     Solution backTrace();
 
 public:
-    BFS();
+    //BFS();
     //the search method
     Solution search(Searchable& searchable) override;
     //the vertex you can go to from the current vertex
     uint32_t getNumberOfNodesEvaluated() const override;
     //which algorithem was used
     std::string getAlgorthemType() const override;
-    ~BFS();
+    //~BFS();
 };
