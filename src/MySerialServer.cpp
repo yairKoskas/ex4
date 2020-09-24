@@ -18,6 +18,8 @@
 #define THROW_SYSTEM_ERROR() \
     throw std::system_error { errno, std::system_category() }
 
+std::mutex g_mutex;
+
 void serialClients(int sockfd, sockaddr_in connectAddress,
             MyClientHandler ch, socklen_t sizeOfCAddress) {
     while(true) {
@@ -25,11 +27,13 @@ void serialClients(int sockfd, sockaddr_in connectAddress,
         if(client_sockfd < 0) {
             THROW_SYSTEM_ERROR();
         }
+        g_mutex.lock();
         ch.handleClient(client_sockfd);
+        g_mutex.unlock();
         close(client_sockfd);
     }
 }
-void MySerialServer::open(int port, MyClientHandler ch) {
+void MySerialServer::open(int port, client_side::ClientHandler& ch) {
     m_sockfd = socket(AF_INET,SOCK_STREAM,0);
     if(m_sockfd < 0) {
         THROW_SYSTEM_ERROR();

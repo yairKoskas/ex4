@@ -33,8 +33,22 @@ Solution DFS::search(Searchable& searchable) {
         for (auto it = succerssors.begin(); it != succerssors.end(); ++it){
             const bool is_in_visited = ((visited.find(*it)) != (visited.end()));
 
+<<<<<<< HEAD:DFS.cpp
             if (!is_in_visited) {  
                 visited.insert(*it);
+=======
+            bool is_in_visited = false;
+            for (auto iter = visited.begin(); iter != visited.end(); ++iter){
+                if((*iter).Equals(*it)){
+                    is_in_visited = true;
+                    break;
+                }
+            }
+
+            if (!is_in_visited) 
+            {  
+                visited.push_back(*it);
+>>>>>>> f6bf8785d96181ff8ed44160eacf4c799a069289:src/DFS.cpp
                 stack.push_back(*it);
             } 
         }
