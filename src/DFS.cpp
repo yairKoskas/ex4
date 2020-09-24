@@ -13,10 +13,10 @@ Solution DFS::search(Searchable& searchable) {
     visited.push_back(searchable.getInitialState()); 
     stack.push_back(searchable.getInitialState()); 
   
-    while(!satck.empty()) 
+    while(!stack.empty()) 
     { 
         // Dequeue a vertex from queue and print it 
-        State state = satck.back(); 
+        State state = stack.back(); 
         this->evaluateNodes++;
         stack.pop_back(); 
   
@@ -28,7 +28,7 @@ Solution DFS::search(Searchable& searchable) {
         // Get all adjacent vertices of the dequeued 
         // vertex s. If a adjacent has not been visited,  
         // then mark it visited and enqueue it 
-        std::list<State> succerssors = searchable.getAllPossibleStates(st);
+        std::list<State> succerssors = searchable.getAllPossibleStates(state);
         for (auto it = succerssors.begin(); it != succerssors.end(); ++it){
 
             bool is_in_visited = false;
@@ -42,7 +42,7 @@ Solution DFS::search(Searchable& searchable) {
             if (!is_in_visited) 
             {  
                 visited.push_back(*it);
-                satck.push_back(*it);
+                stack.push_back(*it);
             } 
         }
     } 

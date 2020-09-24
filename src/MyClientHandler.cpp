@@ -52,8 +52,8 @@ void MyClientHandler::handleClient(int clientSock) {
         THROW_SYSTEM_ERROR();
     }
     int index = buffer.find_first_of(',');
-    int height = std::stoi(buffer.substr(0,index));
-    int width = std::stoi(buffer.substr(index+1,buffer.size()));
+    uint32_t height = std::stoi(buffer.substr(0,index));
+    uint32_t width = std::stoi(buffer.substr(index+1,buffer.size()));
 
     int nextInfo = buffer.find_first_of('\n');
     buffer = buffer.substr(nextInfo+1,buffer.size());
@@ -64,14 +64,14 @@ void MyClientHandler::handleClient(int clientSock) {
             int line = buffer.find_first_of('\n');
             auto valuesBuffer = buffer.substr(0,line);
             for(uint32_t j=0;j<width;j++) {
-                int index = valuesBuffer.find_first_of(',');
-                double value = std::stod(valuesBuffer.substr(0,index));
-                valuesBuffer = valuesBuffer.substr(index+1,valuesBuffer.size());
+                int indexComma = valuesBuffer.find_first_of(',');
+                double value = std::stod(valuesBuffer.substr(0,indexComma));
+                valuesBuffer = valuesBuffer.substr(indexComma+1,valuesBuffer.size());
                 mat.set(i,j,value);
                 
             }
-            int index = buffer.find_first_of('\n');
-            buffer = buffer.substr(index+1,buffer.size());
+            int indexLine = buffer.find_first_of('\n');
+            buffer = buffer.substr(indexLine+1,buffer.size());
         }
     } catch (...) {
         //the client's input for the matrix was bad
@@ -79,10 +79,10 @@ void MyClientHandler::handleClient(int clientSock) {
     }
             
     int indexOfInitState = buffer.find_first_of(',');
-    int i = std::stoi(buffer.substr(0,indexOfInitState));
-    int j = std::stoi(buffer.substr(indexOfInitState+1,buffer.size()));
+    uint32_t i = std::stoi(buffer.substr(0,indexOfInitState));
+    uint32_t j = std::stoi(buffer.substr(indexOfInitState+1,buffer.size()));
     State init = State(i,j,mat(i,j),nullptr);
-    if(i >= height || j >= width || i < 0 || j < 0) {
+    if(i >= height || j >= width) {
         //if the index' of the states were wrong
         statusCode = 2;
     }
@@ -92,7 +92,7 @@ void MyClientHandler::handleClient(int clientSock) {
     indexOfInitState = buffer.find_first_of(',');
     i = std::stoi(buffer.substr(0,indexOfInitState));
     j = std::stoi(buffer.substr(indexOfInitState+1,buffer.size()));
-    if(i >= height || j >= width || i < 0 || j < 0) {
+    if(i >= height || j >= width) {
         //if the index' of the states were wrong
         statusCode = 2;
     }
