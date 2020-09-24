@@ -113,19 +113,28 @@ void MyClientHandler::handleClient(int clientSock) {
         AStar alg = AStar();
         gS.solve(alg,g);
         path = gS.getOutString();
+        responseLength = path.length();
     } else if(algorithm == "BestFS") {
         BestFS alg = BestFS();
         gS.solve(alg,g);
         path = gS.getOutString();
+        responseLength = path.length();
     } else if(algorithm == "DFS") {
         DFS alg = DFS();
         gS.solve(alg,g);
         path = gS.getOutString();
+        responseLength = path.length();
     } else if(algorithm == "BFS") {
         BFS alg = BFS();
         gS.solve(alg,g);
         path = gS.getOutString();
-    } else {
+        responseLength = path.length();
+    } else if(algorithm == ""){
+        DFS alg = DFS();
+        gS.solve(alg,g);
+        path = gS.getOutString();
+        responseLength = path.length();
+    }else{
         //unknown algorithm
         statusCode = 3;
     }

@@ -22,7 +22,7 @@
 
 std::mutex g_mutex;
 
-void threadClient(int serverSock, std::queue<int>& clientConnections, MyClientHandler ch) {
+void threadClient(std::queue<int>& clientConnections, MyClientHandler ch) {
     while(true) {
         g_mutex.lock();
         if(!clientConnections.empty()) {
@@ -40,7 +40,7 @@ void MyParallelServer::open(int port, MyClientHandler ch) {
     std::queue<int> clientConnections;
     std::thread pool[THREAD_POOL_SIZE];
     for(uint32_t i = 0 ; i < THREAD_POOL_SIZE ; ++i ) {
-        pool[i] = std::thread(threadClient, m_sockfd ,std::ref(clientConnections), ch);
+        pool[i] = std::thread(threadClient, std::ref(clientConnections), ch);
     }
     m_sockfd = socket(AF_INET,SOCK_STREAM,0);
     if(m_sockfd < 0) {
