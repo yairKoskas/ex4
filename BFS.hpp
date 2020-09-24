@@ -1,8 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include <queue>
-#include <vector>
+#include <list>
 
 #include "Searcher.hpp"
 #include "Searchable.hpp"

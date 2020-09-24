@@ -2,7 +2,7 @@
 
 #include <bits/stdc++.h>
 #include <vector>
-#include <unordered_set>
+#include <set>
 #include <stdint.h>
 #include <queue>
 
@@ -22,12 +22,12 @@ private:
     Solution backTrace();
 
 public:
-    BestFS();
+    //BestFS();
     //the search method
     Solution search(Searchable& searchable) override;
     //the vertex you can go to from the current vertex
     uint32_t getNumberOfNodesEvaluated() const override;
     //which algorithem was used
     std::string getAlgorthemType() const override;
-    ~BestFS();
+    //~BestFS();
 };

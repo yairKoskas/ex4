@@ -18,5 +18,5 @@ public:
     State getInitialState() const override;
     State getGoalState() const override;
     std::list<State> getAllPossibleStates(State& s) const override;
-    ~Graph();
+    //~Graph();
 };

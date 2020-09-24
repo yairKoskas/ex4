@@ -49,17 +49,17 @@ Solution BFS::search(Searchable& searchable) {
 
 Solution BFS::backTrace(){
     Solution solu;
-    //we know that closed is not empty because it has at least the initState
+    //we know that visited is not empty because it has at least the initState
     while(true){
         solu.getVertexes().push_front(*(visited.end()));
-        visited.erase(closed.end());
+        visited.erase(visited.end());
         //remove States from closed until the top is the State that we came from
         //him to the current State
-        if(closed.empty()){
+        if(visited.empty()){
             return solu;
         }
-        while(!(*(closed.end())).Equals(*(*(solu.getVertexes().begin())).lastStateBeforeCurrent())){
-            closed.erase(closed.end());
+        while(!(*(visited.end())).Equals(*(*(solu.getVertexes().begin())).lastStateBeforeCurrent())){
+            visited.erase(visited.end());
         }
     }
     //can not reach here
