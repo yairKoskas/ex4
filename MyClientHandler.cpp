@@ -9,11 +9,16 @@
 #include "State.hpp"
 #include "Graph.hpp"
 #include "Matrix.hpp"
+#include "GraphSolver.hpp"
+#include "AStar.hpp"
+#include "BestFS.hpp"
+#include "BFS.hpp"
+#include "DFS.hpp"
 #define THROW_SYSTEM_ERROR() \
     throw std::system_error { errno, std::system_category() }
 
 
-int MyClientHandler::handleClient(int clientSock) {
+void MyClientHandler::handleClient(int clientSock) {
     std::string version = "1.0";
     int statusCode = 0;
     int responseLength = 0;
@@ -34,7 +39,7 @@ int MyClientHandler::handleClient(int clientSock) {
     std::string toWrite = "Version: "+ version +
     "\r\nstatus: " + std::to_string(statusCode) + 
     "\r\nresponse length: " + std::to_string(responseLength) + 
-    "\r\n" + path;
+    "\r\n" + path + "\r\n\r\n";
     if(0 > write(clientSock, toWrite.data(), toWrite.size())) {
         close(clientSock);
         THROW_SYSTEM_ERROR();
@@ -76,25 +81,61 @@ int MyClientHandler::handleClient(int clientSock) {
     int indexOfInitState = buffer.find_first_of(',');
     int i = std::stoi(buffer.substr(0,indexOfInitState));
     int j = std::stoi(buffer.substr(indexOfInitState+1,buffer.size()));
-    State init = State(i,j,mat(i,j),NULL);
-
+    State init = State(i,j,mat(i,j),nullptr);
+    if(i >= height || j >= width || i < 0 || j < 0) {
+        //if the index' of the states were wrong
+        statusCode = 2;
+    }
 
     index = buffer.find_first_of('\n');
     buffer = buffer.substr(index+1,buffer.size());
     indexOfInitState = buffer.find_first_of(',');
     i = std::stoi(buffer.substr(0,indexOfInitState));
     j = std::stoi(buffer.substr(indexOfInitState+1,buffer.size()));
-    State goal = State(i,j,mat(i,j),NULL);
+    if(i >= height || j >= width || i < 0 || j < 0) {
+        //if the index' of the states were wrong
+        statusCode = 2;
+    }
+    State goal = State(i,j,mat(i,j),nullptr);
     Graph g = Graph(mat,init,goal);
 
     toWrite = "Version: "+ version +
     "\r\nstatus: " + std::to_string(statusCode) + 
     "\r\nresponse length: " + std::to_string(responseLength) + 
-    "\r\n" + path;
+    "\r\n" + path + "\r\n\r\n";
     if(0 > write(clientSock, toWrite.data(), toWrite.size())) {
         close(clientSock);
         THROW_SYSTEM_ERROR();
     }
 
-    return 0;
+    GraphSolver gS = GraphSolver();
+    if(algorithm == "A*") {
+        AStar alg = AStar();
+        gS.solve(alg,g);
+        path = gS.getOutString();
+    } else if(algorithm == "BestFS") {
+        BestFS alg = BestFS();
+        gS.solve(alg,g);
+        path = gS.getOutString();
+    } else if(algorithm == "DFS") {
+        DFS alg = DFS();
+        gS.solve(alg,g);
+        path = gS.getOutString();
+    } else if(algorithm == "BFS") {
+        BFS alg = BFS();
+        gS.solve(alg,g);
+        path = gS.getOutString();
+    } else {
+        //unknown algorithm
+        statusCode = 3;
+    }
+    toWrite = "Version: "+ version +
+    "\r\nstatus: " + std::to_string(statusCode) + 
+    "\r\nresponse length: " + std::to_string(responseLength) + 
+    "\r\n" + path + "\r\n\r\n";
+    if(0 > write(clientSock, toWrite.data(), toWrite.size())) {
+        close(clientSock);
+        THROW_SYSTEM_ERROR();
+    }
+    return;
 }
