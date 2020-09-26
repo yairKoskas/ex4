@@ -1,74 +1,114 @@
-
-#include <string>
-#include <list>
-#include <iterator>
-
 #include "AStar.hpp"
-
-Solution AStar::search (Searchable& searchable) {
-    State state = State(searchable.getInitialState().getRow(), searchable.getInitialState().getCol(), 0,  nullptr);
-    pq.push(state);
-
-    while(!this->pq.empty()){
-        //pull the first state in the queue and add it to closed-set
-        State st = pq.top();
+#include <limits>
+#include <string>
+#include <iostream>
+bool AStar::isElementInPQ(Node *element, std::priority_queue<Node, std::vector<Node>,
+                         AStarComparator> pq){
+    while (!pq.empty()) {
+        if ((*element).equals(pq.top())) {
+            return true;
+        }
         pq.pop();
-        this->evaluateNodes++;
-        //the check if States are equals is only according to their place in th graph
-        //and not according to the cost
-        closed.insert(st);
-        //check if we arrive to the goal state
-        if(st == (searchable.getGoalState())){
-            return backTrace();
-        }
-        //get all the evaluate states from the current state
-        std::list<State> succerssors = searchable.getAllPossibleStates(st);
-        for (auto it = succerssors.begin(); it != succerssors.end(); ++it){
+    }
+    return false;
+}
 
-            State temp = State((*it).getRow(), (*it).getCol(), (*it).getCost() + heuristics(*(it), searchable), (*it).lastStateBeforeCurrent());
-
-            //true if the state in the set, false if not
-            const bool is_in_closed = ((closed.find(temp)) != (closed.end()));
-            if(!is_in_closed){
-                pq.push(temp);
+void AStar::removeFromPQ(std::priority_queue<Node, std::vector<Node>,
+                                AStarComparator> *pq, Node *node) {
+	std::priority_queue<Node, std::vector<Node>, AStarComparator>
+      copyPQ;
+    while (!pq->empty()) {
+		auto curr = pq->top();
+		pq->pop();
+		if (!(*node).equals(curr)) {
+			copyPQ.push(curr);
+		}
+  	}
+  	while (!copyPQ.empty()) {
+    	auto curr = copyPQ.top();
+    	copyPQ.pop();
+    	pq->push(curr);
+  	}
+}
+bool AStar::areConnected(Node *node1, Node *node2) {
+    return (abs(node1->getI() - node2->getI()) == 0 &&
+          abs(node1->getJ() - node2->getJ()) == 1) ||
+         (abs(node1->getI() - node2->getI()) == 1 &&
+          abs(node1->getJ() - node2->getJ()) == 0);
+}
+std::pair<std::vector<Node>,double> AStar::search(Graph *graph, Node *init, Node *goal) {
+    if (init == nullptr || goal == nullptr || init->getWeight() == -1 ||
+      goal->getWeight() == -1) {
+    	return std::pair<std::vector<Node>,double>(std::vector<Node>(),-1);
+  	}
+  	if (init == goal || (*init).equals(*goal)) {
+    	return std::pair<std::vector<Node>,double>(std::vector<Node>(),-1);
+  	}
+  	auto &g = *graph;
+  	for (int i = 0; i < graph->getHeight(); ++i) {
+    	for (int j = 0; j < graph->getWidth(); ++j) {
+      		if (i == init->getI() && j == init->getJ()) {
+        		g.getNode(i, j)->setDist(0);
+      		} else {
+        		g.getNode(i, j)->setDist(std::numeric_limits<int>::max());
+      		}
+      		m_visitedNodes.push(*(g.getNode(i, j)));
+    	}
+  	}
+  	while (!m_visitedNodes.empty()) {
+    	auto current = m_visitedNodes.top();
+    	m_visitedNodes.pop();
+    	if (current.equals(*goal)) {
+            if (current.getISrc() == init->getI() &&
+                current.getJSrc() == init->getJ() &&
+                !areConnected(&current, init)) {
+                return std::pair<std::vector<Node>,double>(std::vector<Node>(),-1);
             }
+            std::vector<Node> path;
+            auto *node = &current;
+            double weight = 0;
+            while (!(*node).equals(*init)) {
+                path.emplace(path.begin(), *node);
+                weight += node->getWeight();
+                node = g.getNode(node->getISrc(), node->getJSrc());
+            }
+            path.emplace(path.begin(), *node);
+            return std::pair<std::vector<Node>,double>(path,weight);
+    	}
+    	for (auto *neighbor : graph->getConnectedVerts(&current)) {
+      		if (isElementInPQ(neighbor,m_visitedNodes)) {
+	        	auto alt = current.getDist() + neighbor->getWeight();
+        		if (alt < neighbor->getDist()) {
+          			removeFromPQ(&m_visitedNodes, neighbor);
+          			auto i = neighbor->getI(), j = neighbor->getJ();
+          			g.getNode(i, j)->setDist(alt);
+          			g.getNode(i, j)->setISrc(current.getI());
+          			g.getNode(i, j)->setJSrc(current.getJ());
+          			m_visitedNodes.push(*(g.getNode(i, j)));
+        		}
+      		}
+    	}
+  	}
+  	return std::pair<std::vector<Node>,double>(std::vector<Node>(),-1);
+}
+std::string AStar::getOutString(Graph *graph, Node *init, Node *goal) {
+    std::pair<std::vector<Node>,double> path = search(graph,init,goal);
+    std::string pathString;
+    Node before = Node();
+    Node curr = Node();
+    pathString += std::to_string(path.second) + ",";
+    for (auto p : path.first) {
+        curr = p;
+        if(before.getI() > curr.getI() && before.getJ() == curr.getJ()) {
+            pathString += "Up,";
+        }else if(before.getI() < curr.getI() && before.getJ() == curr.getJ()) {
+            pathString += "Down,";
+        }else if(before.getI() == curr.getI() && before.getJ() > curr.getJ()) {
+            pathString += "Left,";
+        }else if(before.getI() == curr.getI() && before.getJ() < curr.getJ()) {
+            pathString += "Right,";
         }
+        before = p;
     }
-    //can not reach here
-    Solution solu;
-    return solu;
-}
-
-double AStar::heuristics(const State& state, const Searchable& searchable) const {
-    //the graph is a matrix, so the distance between the current state and the goal state is at least the sum of their distances at axis x and axis y
-    return (abs(state.getRow() - searchable.getGoalState().getRow()) + abs(state.getCol() - searchable.getGoalState().getCol()));
-}
-
-Solution AStar::backTrace() {
-    Solution solu;
-    //we know that closed is not empty because it has at least the initState
-    while(true){
-        solu.getVertexes().push_front(*(closed.end()));
-        closed.erase(closed.end());
-        //remove States from closed until the top is the State that we came from
-        //him to the current State
-        if(closed.empty()){
-            return solu;
-        }
-        while(!((*(closed.end())) == (*(*(solu.getVertexes().begin())).lastStateBeforeCurrent()))){
-            closed.erase(closed.end());
-        }
-    }
-    //can not reach here
-    return solu;
-}
-
-
-
-uint32_t AStar::getNumberOfNodesEvaluated() const{
-    return this->evaluateNodes;
-}
-
-std::string AStar::getAlgorthemType() const{
-    return "BestFS";
+    return pathString;
 }

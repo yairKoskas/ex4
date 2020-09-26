@@ -1,33 +1,27 @@
-#pragma once
-
-#include <bits/stdc++.h>
-#include <vector>
-#include <unordered_set>
-#include <stdint.h>
+#include "Graph.hpp"
 #include <queue>
+#include <string>
+class AStarComparator {
+    public:
+        bool operator()(Node n1, Node n2) {
+            if( n1.getDist() > n2.getDist() ) {
+                return true;
+            }
+            return false;
+        }
+};
 
-#include "Searcher.hpp"
-#include "Searchable.hpp"
-#include "State.hpp"
-#include "Solution.hpp"
 
-class AStar : public Searcher{
-private:
-    std::priority_queue <State, std::vector<State>, MyComparator> pq;
-    //closed will save the verteses we allready visited them
-    std::set<State> closed;
-    uint32_t evaluateNodes = 0;
-
-    //return a list of the States in the solution of the algorithem
-    Solution backTrace();
-    //calculate heuristics for a state - the "brain" of the algorithem
-    double heuristics(const State& state, const Searchable& searchable) const;
-
-public:
-    //the search method
-    Solution search(Searchable& searchable) override;
-    //the vertex you can go to from the current vertex
-    uint32_t getNumberOfNodesEvaluated() const override;
-    //which algorithem was used
-    std::string getAlgorthemType() const override;
+class AStar {
+    public:
+        void removeFromPQ(std::priority_queue<Node, std::vector<Node>,
+                                    AStarComparator> *pq, Node *node);
+        bool areConnected(Node *node1, Node *node2);
+        std::pair<std::vector<Node>,double> search(Graph *graph, Node *init, Node *goal);
+        std::string getOutString(Graph *graph, Node *init, Node *goal);
+        bool isElementInPQ(Node *element, std::priority_queue<Node, std::vector<Node>,
+                         AStarComparator> pq);
+    private:
+        std::vector<Node> m_closedVertices;
+        std::priority_queue<Node, std::vector<Node>, AStarComparator> m_visitedNodes;
 };

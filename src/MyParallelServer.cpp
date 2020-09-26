@@ -12,7 +12,7 @@
 #include <system_error>
 #include <thread>
 #include <queue>
-#include "MyClientHandler.hpp"
+#include "ClientHandler.hpp"
 #include "MyParallelServer.hpp"
 
 #define THREAD_POOL_SIZE 20
@@ -22,7 +22,7 @@
 
 std::mutex g_mutex;
 
-void threadClient(std::queue<int>& clientConnections, MyClientHandler ch) {
+void threadClient(std::queue<int>& clientConnections, client_side::ClientHandler& ch) {
     while(true) {
         g_mutex.lock();
         if(!clientConnections.empty()) {
@@ -36,11 +36,15 @@ void threadClient(std::queue<int>& clientConnections, MyClientHandler ch) {
     }
 }
 
+<<<<<<< HEAD
 void MyParallelServer::open(int port, MyClientHandler& ch) {
+=======
+void MyParallelServer::open(int port, client_side::ClientHandler& ch) {
+>>>>>>> 537709e809e8dd667d4d72380a3ef49c44a97eee
     std::queue<int> clientConnections;
     std::thread pool[THREAD_POOL_SIZE];
     for(uint32_t i = 0 ; i < THREAD_POOL_SIZE ; ++i ) {
-        pool[i] = std::thread(threadClient, std::ref(clientConnections), ch);
+        pool[i] = std::thread(threadClient, std::ref(clientConnections), std::ref(ch));
     }
     m_sockfd = socket(AF_INET,SOCK_STREAM,0);
     if(m_sockfd < 0) {

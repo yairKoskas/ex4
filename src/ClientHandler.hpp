@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CLIENT_HANDLER_H
+#define CLIENT_HANDLER_H
 
 namespace client_side {
     class ClientHandler {
@@ -7,3 +8,5 @@ namespace client_side {
             virtual ~ClientHandler() = default;
     };
 }
+
+#endif //CLIENT_HANDLER_H
