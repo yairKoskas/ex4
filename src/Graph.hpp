@@ -37,7 +37,7 @@ class Node {
             return weight;
         }
         int getDist() {
-            return weight;
+            return astarDistance;
         }
         void setI(int iOther) {
             this->i = iOther;

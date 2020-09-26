@@ -43,7 +43,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_compile_options(-Wall -Wextra -pedantic -Werror -Wnon-virtual-dtor -Wshadow)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-add_executable(ex4.out main.cpp
+add_executable(ex4.out Experiment.cpp
 BestFS.cpp
 AStar.cpp
 BFS.cpp
@@ -54,6 +54,7 @@ MessageException.cpp
 MyClientHandler.cpp
 MyParallelServer.cpp
 MySerialServer.cpp
+file_reading.cpp
 Matrix.cpp)
 target_link_directories(ex4.out PUBLIC ${PROJECT_SOURCE_DIR})
 target_link_libraries(ex4.out matrix ${CMAKE_THREAD_LIBS_INIT})
