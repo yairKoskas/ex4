@@ -12,6 +12,7 @@
 #include "Graph.hpp"
 #include "BestFS.hpp"
 #include "BFS.hpp"
+#include "AStar.hpp"
 #define THROW_SYSTEM_ERROR() \
     throw std::system_error { errno, std::system_category() }
 
@@ -38,9 +39,9 @@ void MyClientHandler::handleClient(int clientSock) {
     algorithm = algorithm.substr(0,algorithm.find_first_of('\0'));
 
     std::string toWrite = "Version: "+ version +
-    "\nstatus: " + std::to_string(statusCode) + 
-    "\nresponse length: " + std::to_string(responseLength) + 
-    "\n" + path + "\n\n";
+    "\r\nstatus: " + std::to_string(statusCode) + 
+    "\r\nresponse length: " + std::to_string(responseLength) + 
+    "\r\n" + path + "\r\n\r\n";
     if(0 > write(clientSock, toWrite.data(), toWrite.size())) {
         close(clientSock);
         THROW_SYSTEM_ERROR();
@@ -62,39 +63,35 @@ void MyClientHandler::handleClient(int clientSock) {
     auto mat = Matrix(height,width);
     try {
         for(uint32_t i=0;i<height;i++) {
-            int line = buffer.find_first_of("\r\n");
-            auto valuesBuffer = buffer.substr(0,line);
+            auto valuesBuffer = buffer.substr(0,buffer.find("\r\n"));
             for(uint32_t j=0;j<width;j++) {
                 int indexComma = valuesBuffer.find_first_of(',');
                 double value = std::stod(valuesBuffer.substr(0,indexComma));
                 valuesBuffer = valuesBuffer.substr(indexComma+1,valuesBuffer.size());
                 mat.set(i,j,value);
             }
-            int indexLine = buffer.find_first_of("\r\n");
-            buffer = buffer.substr(indexLine+1,buffer.size());
+            buffer = buffer.substr(buffer.find("\r\n")+1,buffer.size());
         }
-    } catch (...) {
-        //the client's input for the matrix was bad
+    } catch (std::exception& e) {
+        //the client's input for the matrix was bad=
         statusCode = 1;
     }
     Graph g = Graph(mat);
-
-    int indexOfInitState = buffer.find_first_of(',');
-    uint32_t i = std::stoi(buffer.substr(0,indexOfInitState));
-    uint32_t j = std::stoi(buffer.substr(indexOfInitState+1,buffer.size()));
-    Node* init = g.getNode(i,j);
-    if(i >= height || j >= width) {
+    int indexOfInitState = buffer.find(',');
+    uint32_t iInit = std::stoi(buffer.substr(0,indexOfInitState));
+    uint32_t jInit = std::stoi(buffer.substr(indexOfInitState+1,buffer.size()));
+    if(iInit >= height || jInit >= width) {
         //if the index' of the states were wrong
         statusCode = 2;
     }
-
-    index = buffer.find_first_of("\r\n");
+    Node* init = g.getNode(iInit,jInit);
+    index = buffer.find("\r\n");
     buffer = buffer.substr(index+1,buffer.size());
     indexOfInitState = buffer.find_first_of(',');
-    i = std::stoi(buffer.substr(0,indexOfInitState));
-    j = std::stoi(buffer.substr(indexOfInitState+1,buffer.size()));
-    Node* goal = g.getNode(i,j);
-    if(i >= height || j >= width) {
+    uint32_t iGoal = std::stoi(buffer.substr(0,indexOfInitState));
+    uint32_t jGoal = std::stoi(buffer.substr(indexOfInitState+1,buffer.size()));
+    Node* goal = g.getNode(iGoal,jGoal);
+    if(iGoal >= height || jGoal >= width) {
         //if the index' of the states were wrong
         statusCode = 2;
     }
@@ -108,9 +105,13 @@ void MyClientHandler::handleClient(int clientSock) {
     }
 
     if(algorithm == "A*") {
-
+        AStar a = AStar();
+        path = a.getOutString(&g,init,goal);
+        responseLength = path.size();
     } else if(algorithm == "BestFS") {
-
+        BestFS bstFs = BestFS();
+        path = bstFs.getOutString(&g,init,goal);
+        responseLength = path.size();
     } else if(algorithm == "DFS") {
         DFS s = DFS();
         path = s.getOutString(&g,init,goal);
@@ -120,18 +121,19 @@ void MyClientHandler::handleClient(int clientSock) {
         path = s.getOutString(&g,init,goal);
         responseLength = path.size();
     } else if(algorithm == ""){
-        
+        BestFS bstFs = BestFS();
+        path = bstFs.getOutString(&g,init,goal);
+        responseLength = path.size();
     }else{
         //unknown algorithm
         statusCode = 3;
     }
     toWrite = "Version: "+ version +
-    "\nstatus: " + std::to_string(statusCode) + 
-    "\nresponse length: " + std::to_string(responseLength) + 
-    "\n" + path + "\n\n";
+    "\r\nstatus: " + std::to_string(statusCode) + 
+    "\r\nresponse length: " + std::to_string(responseLength) + 
+    "\r\n" + path + "\r\n\r\n";
     if(0 > write(clientSock, toWrite.data(), toWrite.size())) {
         close(clientSock);
         THROW_SYSTEM_ERROR();
     }
-    return;
 }

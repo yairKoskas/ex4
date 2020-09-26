@@ -16,7 +16,7 @@ class AStar {
     public:
         void removeFromPQ(std::priority_queue<Node, std::vector<Node>,
                                     AStarComparator> *pq, Node *node);
-        bool areConnected(Node *node1, Node *node2);
+        bool areConnected(Graph *g,Node *node1, Node *node2);
         std::pair<std::vector<Node>,double> search(Graph *graph, Node *init, Node *goal);
         std::string getOutString(Graph *graph, Node *init, Node *goal);
         bool isElementInPQ(Node *element, std::priority_queue<Node, std::vector<Node>,

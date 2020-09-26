@@ -64,7 +64,7 @@ std::string DFS::getOutString(Graph *g,Node* init, Node* goal) {
     std::string pathString;
     Node before = Node();
     Node curr = Node();
-    pathString += std::to_string(path.second) + ",";
+    pathString += std::to_string((int)path.second) + ",";
     for (auto p : path.first) {
         curr = p;
         if(before.getI() > curr.getI() && before.getJ() == curr.getJ()) {

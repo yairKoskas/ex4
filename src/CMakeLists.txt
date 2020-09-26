@@ -46,6 +46,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 add_executable(ex4.out Experiment.cpp
 BestFS.cpp
 AStar.cpp
+BestFS.cpp
 BFS.cpp
 DFS.cpp
 Graph.cpp

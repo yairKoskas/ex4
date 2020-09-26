@@ -30,11 +30,14 @@ void AStar::removeFromPQ(std::priority_queue<Node, std::vector<Node>,
     	pq->push(curr);
   	}
 }
-bool AStar::areConnected(Node *node1, Node *node2) {
-    return (abs(node1->getI() - node2->getI()) == 0 &&
-          abs(node1->getJ() - node2->getJ()) == 1) ||
-         (abs(node1->getI() - node2->getI()) == 1 &&
-          abs(node1->getJ() - node2->getJ()) == 0);
+bool AStar::areConnected(Graph *g,Node *node1, Node *node2) {
+    std::vector<Node*> connectionsToNode1 = g->getConnectedVerts(node1);
+    for(auto s : connectionsToNode1) {
+        if(node2->equals(*s)) {
+            return true;
+        }
+    }
+    return false;
 }
 std::pair<std::vector<Node>,double> AStar::search(Graph *graph, Node *init, Node *goal) {
     if (init == nullptr || goal == nullptr || init->getWeight() == -1 ||
@@ -61,7 +64,7 @@ std::pair<std::vector<Node>,double> AStar::search(Graph *graph, Node *init, Node
     	if (current.equals(*goal)) {
             if (current.getISrc() == init->getI() &&
                 current.getJSrc() == init->getJ() &&
-                !areConnected(&current, init)) {
+                !areConnected(&g,&current, init)) {
                 return std::pair<std::vector<Node>,double>(std::vector<Node>(),-1);
             }
             std::vector<Node> path;
@@ -73,6 +76,7 @@ std::pair<std::vector<Node>,double> AStar::search(Graph *graph, Node *init, Node
                 node = g.getNode(node->getISrc(), node->getJSrc());
             }
             path.emplace(path.begin(), *node);
+            weight += node->getWeight();
             return std::pair<std::vector<Node>,double>(path,weight);
     	}
     	for (auto *neighbor : graph->getConnectedVerts(&current)) {
@@ -96,7 +100,7 @@ std::string AStar::getOutString(Graph *graph, Node *init, Node *goal) {
     std::string pathString;
     Node before = Node();
     Node curr = Node();
-    pathString += std::to_string(path.second) + ",";
+    pathString += std::to_string((int)path.second) + ",";
     for (auto p : path.first) {
         curr = p;
         if(before.getI() > curr.getI() && before.getJ() == curr.getJ()) {
