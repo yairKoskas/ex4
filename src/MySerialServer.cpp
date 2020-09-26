@@ -10,12 +10,7 @@
 #include <system_error>
 #include <mutex>
 #include <thread>
-<<<<<<< HEAD
-#include "ClientHandler.hpp"
-#include "MySerialServer.hpp"
-=======
 #include <errno.h>
->>>>>>> 537709e809e8dd667d4d72380a3ef49c44a97eee
 #include "MyClientHandler.hpp"
 
 #define THROW_SYSTEM_ERROR() \
@@ -58,12 +53,7 @@ void MySerialServer::open(int port, client_side::ClientHandler& ch) {
         THROW_SYSTEM_ERROR();
     }
     socklen_t sizeOfCAddress = sizeof(connectAddress);
-<<<<<<< HEAD
-    std::thread t1(serialClients, m_sockfd, connectAddress, ch, sizeOfCAddress);
-    t1.join();
-=======
     std::thread t1(serialClients,m_sockfd, connectAddress, std::ref(ch), sizeOfCAddress);
->>>>>>> 537709e809e8dd667d4d72380a3ef49c44a97eee
     
 }
 

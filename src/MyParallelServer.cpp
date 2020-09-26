@@ -36,11 +36,7 @@ void threadClient(std::queue<int>& clientConnections, client_side::ClientHandler
     }
 }
 
-<<<<<<< HEAD
-void MyParallelServer::open(int port, MyClientHandler& ch) {
-=======
 void MyParallelServer::open(int port, client_side::ClientHandler& ch) {
->>>>>>> 537709e809e8dd667d4d72380a3ef49c44a97eee
     std::queue<int> clientConnections;
     std::thread pool[THREAD_POOL_SIZE];
     for(uint32_t i = 0 ; i < THREAD_POOL_SIZE ; ++i ) {

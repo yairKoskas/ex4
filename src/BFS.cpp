@@ -46,37 +46,16 @@ std::pair<std::vector<Node>,double> BFS::search(Graph *g, Node* init, Node* goal
             }
             return std::pair<std::vector<Node>,double>(path,weight);
         }
-<<<<<<< HEAD
-
-        // Get all adjacent vertices of the dequeued 
-        // vertex s. If a adjacent has not been visited,  
-        // then mark it visited and enqueue it 
-        std::list<State> succerssors = searchable.getAllPossibleStates(state);
-        for (auto it = succerssors.begin(); it != succerssors.end(); ++it){
-
-            bool is_in_visited = false;
-            for (auto iter = visited.begin(); iter != visited.end(); ++iter){
-                if((*iter).equals(*it)){
-                    is_in_visited = true;
-                    break;
-                }
-=======
         for (auto neighbor : g->getConnectedVerts(&current)) {
             if (!isVertexClosed(neighbor)) {
                 neighbor->setISrc(current.getI());
                 neighbor->setJSrc(current.getJ());
                 setVisited(neighbor);
                 m_closedVertices.push_back(*neighbor);
->>>>>>> 537709e809e8dd667d4d72380a3ef49c44a97eee
             }
         }
     }
-<<<<<<< HEAD
-    Solution solution;
-    return solution;
-=======
     return std::pair<std::vector<Node>,double>();
->>>>>>> 537709e809e8dd667d4d72380a3ef49c44a97eee
 }
 
 std::string BFS::getOutString(Graph *g,Node* init, Node* goal) {
