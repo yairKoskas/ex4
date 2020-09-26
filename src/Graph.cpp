@@ -1,42 +1,64 @@
 #include "Graph.hpp"
-#include "Matrix.hpp"
-#include <list>
-#include  <iostream>
-
-
-Graph::Graph(const Matrix& other, const State& initS, const State& goalS): matrix(other) ,initState(initS), goalState(goalS) {
+#include <vector>
+#include <iostream>
+Graph::Graph(std::vector<std::vector<int>> graph,int height, int width) {
+    std::vector<std::vector<Node>> nodes;
+    for (int i = 0; i < height; ++i) {
+        std::vector<Node> line;
+        for (int j = 0; j < width; ++j) {
+            Node node = Node(i,j,0,0,graph[i][j]);
+            line.push_back(node);
+        }
+        nodes.push_back(line);
+    }
+    m_Vertices = nodes;
+    m_height = height;
+    m_width = width;
 }
 
-State Graph::getInitialState() const {
-    return this->initState;
+Graph::Graph(Matrix mat) {
+    m_Vertices.clear();
+    for(uint32_t i = 0; i < mat.getHeight(); ++i) {
+        std::vector<Node> nodesVector;
+        for(uint32_t j = 0; j < mat.getWidth(); ++j) {
+            Node node = Node(i,j,0,0,mat(i,j));
+            nodesVector.push_back(node);
+        }
+        m_Vertices.push_back(nodesVector);
+    }
+    m_height = mat.getHeight();
+    m_width = mat.getWidth();
+}
+std::vector<Node*> Graph::getConnectedVerts(Node* node) {
+    //goes to the vertices field and gets all the connected 
+    //vertices in the given matrix input
+    std::vector<Node*> connectedVerts;
+    auto i = node->getI();
+    auto j = node->getJ();
+    Node *curr;
+    curr = (*this).getNode(i - 1, j);
+    if (curr != nullptr && curr->getWeight() != -1) {
+        connectedVerts.push_back(curr);
+    }
+    curr = (*this).getNode(i + 1, j);
+    if (curr != nullptr && curr->getWeight() != -1) {
+        connectedVerts.push_back(curr);
+    }
+    curr = (*this).getNode(i, j - 1);
+    if (curr != nullptr && curr->getWeight() != -1) {
+        connectedVerts.push_back(curr);
+    }
+    curr = (*this).getNode(i, j + 1);
+    if (curr != nullptr && curr->getWeight() != -1) {
+        connectedVerts.push_back(curr);
+    }
+    return connectedVerts;
 }
 
-State Graph::getGoalState() const {
-    return this->goalState;
-}
-
-std::list<State> Graph::getAllPossibleStates(State& s) const {
-    std::list<State> allPossibeStates;
-
-    if(s.getRow() > 0){
-        State state = State(s.getRow() - 1, s.getCol(), s.getCost() + this->matrix(s.getRow() - 1, s.getCol()), &s);
-        allPossibeStates.push_back(state);
+Node* Graph::getNode(int i,int j) {
+    if (0 <= i && i < m_height && 0 <= j &&
+      j < m_width) {
+    return &m_Vertices[i][j];
     }
-
-    if(s.getRow() < (this->matrix).getHeight() - 1){
-        State state = State(s.getRow() + 1, s.getCol(), s.getCost() + this->matrix(s.getRow() + 1, s.getCol()), &s);
-        allPossibeStates.push_back(state);
-    }
-
-    if(s.getCol() > 0){
-        State state = State(s.getRow(), s.getCol() - 1, s.getCost() + this->matrix(s.getRow(), s.getCol() - 1), &s);
-        allPossibeStates.push_back(state);
-    }
-
-    if(s.getCol() < (this->matrix).getWidth() - 1){
-        State state = State(s.getRow(), s.getCol() + 1, s.getCost() + this->matrix(s.getRow(), s.getCol() + 1), &s);
-        allPossibeStates.push_back(state);
-    }
-
-    return allPossibeStates;
+    return nullptr;
 }

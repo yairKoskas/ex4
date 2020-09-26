@@ -1,75 +1,81 @@
-#include <string>
-#include <iterator>
-#include <list>
-
 #include "BFS.hpp"
-#include "Searchable.hpp"
-#include "State.hpp"
-#include "Solution.hpp"
-
-Solution BFS::search(Searchable& searchable) {
-    // Mark the current node as visited and enqueue it 
-    visited.push_back(searchable.getInitialState()); 
-    queue.push_back(searchable.getInitialState()); 
-  
-    while(!queue.empty()) 
-    { 
-        // Dequeue a vertex from queue and print it 
-        State state = queue.front(); 
-        this->evaluateNodes++;
-        queue.pop_front(); 
-  
-        //check if we found the goal state
-        if(state.equals(searchable.getGoalState())){
-            return backTrace();
-        }
-
-        // Get all adjacent vertices of the dequeued 
-        // vertex s. If a adjacent has not been visited,  
-        // then mark it visited and enqueue it 
-        std::list<State> succerssors = searchable.getAllPossibleStates(st);
-        for (auto it = succerssors.begin(); it != succerssors.end(); ++it){
-
-            bool is_in_visited = false;
-            for (auto iter = visited.begin(); iter != visited.end(); ++iter){
-                if((*iter).equals(*it)){
-                    is_in_visited = true;
-                    break;
-                }
-            }
-
-            if (!is_in_visited) 
-            {  
-                visited.push_back(*it);
-                queue.push_back(*it);
-            } 
-        }
-    } 
+#include "Graph.hpp"
+#include <stdlib.h>
+#include <iostream>
+void BFS::setVisited(Node* node) {
+    m_visitedVertices.push(*node);
+}
+bool BFS::isEmpty() {
+    return m_visitedVertices.empty();
+}
+Node BFS::popVertex() {
+    auto node = m_visitedVertices.front();
+    m_visitedVertices.pop();
+    return node;
 }
 
-Solution BFS::backTrace(){
-    Solution solu;
-    //we know that visited is not empty because it has at least the initState
-    while(true){
-        solu.getVertexes().push_front(*(visited.end()));
-        visited.erase(visited.end());
-        //remove States from closed until the top is the State that we came from
-        //him to the current State
-        if(visited.empty()){
-            return solu;
+bool BFS::isVertexClosed(Node* node) {
+    for (auto it = m_closedVertices.begin(); it != m_closedVertices.end(); ++it) {
+      if ((*it).equals(*node)) {
+        return true;
+      }
+    }
+    return false;
+}
+std::pair<std::vector<Node>,double> BFS::search(Graph *g, Node* init, Node* goal) {
+    //m_visitedVertices is a stack
+    if (init == nullptr || goal == nullptr || init->getWeight() == -1 ||
+        goal->getWeight() == -1) {
+        return std::pair<std::vector<Node>,double>(std::vector<Node>(),-1);
+    }
+    if (init == goal || (*init).equals(*goal)) {
+        return std::pair<std::vector<Node>,double>(std::vector<Node>(),-1);
+    }
+    setVisited(init);
+    m_closedVertices.push_back(*init);
+    while (!isEmpty()) {
+        auto current = popVertex();
+        if (current.equals(*goal)) {
+            std::vector<Node> path;
+            double weight;
+            auto *node = &current;
+            while (!(*node).equals(*init)) {
+                path.emplace(path.begin(), *node);
+                weight += node->getWeight();
+                node = (*g).getNode(node->getISrc(), node->getJSrc());
+            }
+            return std::pair<std::vector<Node>,double>(path,weight);
         }
-        while(!(*(visited.end())).equals(*(*(solu.getVertexes().begin())).lastStateBeforeCurrent())){
-            visited.erase(visited.end());
+        for (auto neighbor : g->getConnectedVerts(&current)) {
+            if (!isVertexClosed(neighbor)) {
+                neighbor->setISrc(current.getI());
+                neighbor->setJSrc(current.getJ());
+                setVisited(neighbor);
+                m_closedVertices.push_back(*neighbor);
+            }
         }
     }
-    //can not reach here
-    return solu;
+    return std::pair<std::vector<Node>,double>();
 }
 
-uint32_t BFS::getNumberOfNodesEvaluated() const {
-    return this->evaluateNodes;
-}
-
-std::string BFS::getAlgorthemType() const {
-    return "BFS";
+std::string BFS::getOutString(Graph *g,Node* init, Node* goal) {
+    std::pair<std::vector<Node>,double> path = search(g,init,goal);
+    std::string pathString;
+    Node before = Node();
+    Node curr = Node();
+    pathString += std::to_string(path.second) + ",";
+    for (auto p : path.first) {
+        curr = p;
+        if(before.getI() > curr.getI() && before.getJ() == curr.getJ()) {
+            pathString += "Up,";
+        }else if(before.getI() < curr.getI() && before.getJ() == curr.getJ()) {
+            pathString += "Down,";
+        }else if(before.getI() == curr.getI() && before.getJ() > curr.getJ()) {
+            pathString += "Left,";
+        }else if(before.getI() == curr.getI() && before.getJ() < curr.getJ()) {
+            pathString += "Right,";
+        }
+        before = p;
+    }
+    return pathString;
 }

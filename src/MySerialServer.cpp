@@ -7,29 +7,27 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <iostream>
-#include <string_view>
 #include <system_error>
 #include <mutex>
 #include <thread>
-#include "ClientHandler.hpp"
-#include "MySerialServer.hpp"
+#include <errno.h>
+#include "MyClientHandler.hpp"
 
 #define THROW_SYSTEM_ERROR() \
     throw std::system_error { errno, std::system_category() }
 
-std::mutex g_mutex;
+std::mutex g_mutex_serial;
 
 void serialClients(int sockfd, sockaddr_in connectAddress,
-            MyClientHandler ch, socklen_t sizeOfCAddress) {
+            client_side::ClientHandler& ch, socklen_t sizeOfCAddress) {
     while(true) {
         int client_sockfd = accept(sockfd, reinterpret_cast<sockaddr*>(&connectAddress),&sizeOfCAddress);
         if(client_sockfd < 0) {
             THROW_SYSTEM_ERROR();
         }
-        g_mutex.lock();
+        g_mutex_serial.lock();
         ch.handleClient(client_sockfd);
-        g_mutex.unlock();
+        g_mutex_serial.unlock();
         close(client_sockfd);
     }
 }
@@ -55,11 +53,10 @@ void MySerialServer::open(int port, client_side::ClientHandler& ch) {
         THROW_SYSTEM_ERROR();
     }
     socklen_t sizeOfCAddress = sizeof(connectAddress);
-    std::thread t1(serialClients,m_sockfd, connectAddress, ch, sizeOfCAddress);
-    t1.join();
+    std::thread t1(serialClients,m_sockfd, connectAddress, std::ref(ch), sizeOfCAddress);
     
 }
 
 void MySerialServer::closeServer() {
     close(m_sockfd);
-} 
+}

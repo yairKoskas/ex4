@@ -1,17 +1,15 @@
-#pragma once
+#ifndef SERVER_H
+#define SERVER_H
 
-#include <sys/socket.h>
-#include <string_view>
-#include <iostream>
-
-#include "MyClientHandler.hpp"
-
+#include "ClientHandler.hpp"
 
 namespace server_side {
     class Server {
         public:
-            virtual void open(int port, client_side::ClientHandler& ch);
-            virtual void closeServer();
+            virtual void open(int port, client_side::ClientHandler& ch) = 0;
+            virtual void closeServer() = 0;
             virtual ~Server() = default;
     };
 }
+
+#endif //SERVER_H
