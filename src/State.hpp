@@ -12,6 +12,7 @@ private:
 public:
     State(uint32_t row, uint32_t col, double cost, State* state);
     bool equals(const State& other) const;
+    bool notEquals(const State& other) const;
     uint32_t getRow() const;
     uint32_t getCol() const;
     double getCost() const;
@@ -21,7 +22,12 @@ public:
     bool operator<(const State& other) const;
 };
 //compare to States according to their cost
-class MyComparator {
+struct MyComparator {
 public:
-    uint32_t operator() (State& s1, State& s2) const;
+    bool operator() (const State& s1, const State& s2) const;
+};
+
+struct MySetComparator {
+public:
+    bool operator() (const State& s1, const State& s2) const;
 };

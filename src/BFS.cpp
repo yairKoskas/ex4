@@ -27,7 +27,7 @@ Solution BFS::search(Searchable& searchable) {
         // Get all adjacent vertices of the dequeued 
         // vertex s. If a adjacent has not been visited,  
         // then mark it visited and enqueue it 
-        std::list<State> succerssors = searchable.getAllPossibleStates(st);
+        std::list<State> succerssors = searchable.getAllPossibleStates(state);
         for (auto it = succerssors.begin(); it != succerssors.end(); ++it){
 
             bool is_in_visited = false;
@@ -44,7 +44,9 @@ Solution BFS::search(Searchable& searchable) {
                 queue.push_back(*it);
             } 
         }
-    } 
+    }
+    Solution solution;
+    return solution;
 }
 
 Solution BFS::backTrace(){

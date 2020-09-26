@@ -14,6 +14,7 @@
 #include <thread>
 #include "ClientHandler.hpp"
 #include "MySerialServer.hpp"
+#include "MyClientHandler.hpp"
 
 #define THROW_SYSTEM_ERROR() \
     throw std::system_error { errno, std::system_category() }
@@ -55,7 +56,7 @@ void MySerialServer::open(int port, client_side::ClientHandler& ch) {
         THROW_SYSTEM_ERROR();
     }
     socklen_t sizeOfCAddress = sizeof(connectAddress);
-    std::thread t1(serialClients,m_sockfd, connectAddress, ch, sizeOfCAddress);
+    std::thread t1(serialClients, m_sockfd, connectAddress, ch, sizeOfCAddress);
     t1.join();
     
 }

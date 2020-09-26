@@ -6,23 +6,26 @@
 #include "Searcher.hpp"
 #include "Solution.hpp"
 
+#include <iostream>
+
 void GraphSolver::solve(Searcher& searcher, Searchable& searchable){
-<<<<<<< HEAD:GraphSolver.cpp
+
+        std::cout << "GraphSolver solve debug1" << std::endl;
 
     solution = searcher.search(searchable);
+            std::cout << "GraphSolver solve debug2" << std::endl;
+
 
     numberOfEvaluateVertex = searcher.getNumberOfNodesEvaluated();
+            std::cout << "GraphSolver solve debug3" << std::endl;
+
     
     outString = std::to_string(solution.getNumberOfVertexesInWay())
                  + ',' + searcher.getAlgorthemType()
                  + ',' + solution.getWayThrowGraph();
-=======
-    solution = searcher.search(searchable);
-    numberOfEvaluateVertex = searcher.getNumberOfNodesEvaluated();
-    outString = std::to_string(solution.getNumberOfVertexesInWay())
-                 + searcher.getAlgorthemType()
-                 + solution.getWayThrowGraph();
->>>>>>> f6bf8785d96181ff8ed44160eacf4c799a069289:src/GraphSolver.cpp
+
+            std::cout << "GraphSolver solve debug4" << std::endl;
+
 }
 
 std::string GraphSolver::getOutString() const{

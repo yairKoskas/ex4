@@ -4,7 +4,6 @@
 #include <iterator>
 
 #include "BestFS.hpp"
-#include "Graph.hpp"
 
 Solution BestFS::search (Searchable& searchable) {
     if(searchable.getInitialState() == searchable.getGoalState()){

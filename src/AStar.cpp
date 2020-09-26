@@ -18,7 +18,7 @@ Solution AStar::search (Searchable& searchable) {
         //and not according to the cost
         closed.insert(st);
         //check if we arrive to the goal state
-        if(st.Equals(searchable.getGoalState())){
+        if(st == (searchable.getGoalState())){
             return backTrace();
         }
         //get all the evaluate states from the current state
@@ -28,9 +28,9 @@ Solution AStar::search (Searchable& searchable) {
             State temp = State((*it).getRow(), (*it).getCol(), (*it).getCost() + heuristics(*(it), searchable), (*it).lastStateBeforeCurrent());
 
             //true if the state in the set, false if not
-            const bool is_in_closed = ((closed.find(*it)) != (closed.end()));
+            const bool is_in_closed = ((closed.find(temp)) != (closed.end()));
             if(!is_in_closed){
-                pq.push(*it);
+                pq.push(temp);
             }
         }
     }
@@ -55,7 +55,7 @@ Solution AStar::backTrace() {
         if(closed.empty()){
             return solu;
         }
-        while(!(*(closed.end())).Equals(*(*(solu.getVertexes().begin())).lastStateBeforeCurrent())){
+        while(!((*(closed.end())) == (*(*(solu.getVertexes().begin())).lastStateBeforeCurrent()))){
             closed.erase(closed.end());
         }
     }
