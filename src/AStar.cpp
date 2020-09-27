@@ -32,6 +32,9 @@ void AStar::removeFromPQ(std::priority_queue<Node, std::vector<Node>,
 }
 bool AStar::areConnected(Graph *g,Node *node1, Node *node2) {
     std::vector<Node*> connectionsToNode1 = g->getConnectedVerts(node1);
+    if(connectionsToNode1.empty()){
+        return false;
+    }
     for(auto s : connectionsToNode1) {
         if(node2->equals(*s)) {
             return true;
@@ -51,11 +54,11 @@ std::pair<std::vector<Node>,double> AStar::search(Graph *graph, Node *init, Node
   	for (int i = 0; i < graph->getHeight(); ++i) {
     	for (int j = 0; j < graph->getWidth(); ++j) {
       		if (i == init->getI() && j == init->getJ()) {
-        		g.getNode(i, j)->setDist(0);
+        		g.getNode(j, i)->setDist(0);
       		} else {
-        		g.getNode(i, j)->setDist(std::numeric_limits<int>::max());
+        		g.getNode(j, i)->setDist(std::numeric_limits<int>::max());
       		}
-      		m_visitedNodes.push(*(g.getNode(i, j)));
+      		m_visitedNodes.push(*(g.getNode(j, i)));
     	}
   	}
   	while (!m_visitedNodes.empty()) {
@@ -81,7 +84,7 @@ std::pair<std::vector<Node>,double> AStar::search(Graph *graph, Node *init, Node
     	}
     	for (auto *neighbor : graph->getConnectedVerts(&current)) {
       		if (isElementInPQ(neighbor,m_visitedNodes)) {
-	        	auto alt = current.getDist() + neighbor->getWeight();
+	        	auto alt = current.getDist() + abs(current.getI() - goal->getI()) + abs(current.getJ() - goal->getJ());
         		if (alt < neighbor->getDist()) {
           			removeFromPQ(&m_visitedNodes, neighbor);
           			auto i = neighbor->getI(), j = neighbor->getJ();
