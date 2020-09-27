@@ -16,14 +16,11 @@ BestFS.cpp
 BFS.cpp
 DFS.cpp
 Graph.cpp
-GraphSolver.cpp
 Matrix.cpp
 MessageException.cpp
 MyClientHandler.cpp
 MyParallelServer.cpp
 MySerialServer.cpp
-Solution.cpp
-State.cpp
 )
 target_link_libraries(ex4.out matrix  ${CMAKE_THREAD_LIBS_INIT})
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
